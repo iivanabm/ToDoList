@@ -1,8 +1,7 @@
 import React from "react";
 import TaskForm from "./Components/TaskForm";
-import TaskFilter from "./Components/TaskFilter";
-import TaskList from "./Components/TaskList";
 import styled from "styled-components";
+import TaskList from "./Components/TaskList";
 
 const AppContainer = styled.div`
   border: 1px solid gray;
@@ -12,29 +11,40 @@ const AppContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: #E0EEE0;
 `;
 
 const H1 = styled.h1`
   font-size: 4em;
-  color: blue;
+  animation-name: todolist;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+
+  @keyframes todolist{
+    from{
+      color: purple;
+    }
+    to{
+      color: #CD1076;
+    }
+  };
 `;
+
 
 class App extends React.Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      taskList: [{}],
-
-      selectedFilter: ""
+      taskList: [],
+      newTask: ""
     }
   }
 
   addTask = (task) => {
     const newTask = {
       id: Date.now(),
-      task: task,
-      done: false
+      task: task
     }
 
     const taskCopy = [newTask, ...this.state.taskList];
@@ -42,34 +52,24 @@ class App extends React.Component {
     this.setState({ taskList: taskCopy });
   }
 
-  alterFilter = (newFilter) => {
-    this.setState({ selectedFilter: newFilter });
-  }
-
-  alterTask = (taskId) => {
-    const newList = this.state.taskList.map(eachTask => {
-      if (eachTask.id === taskId) {
-        const taskCopy = { ...eachTask }
-        taskCopy.done = !taskCopy.done
-        return taskCopy;
-      } else {
-        return eachTask;
-      }
-
-      this.setState({ taskList: newList });
+  deleteTask = (taskId) => {
+    const newTaskList = this.state.taskList.filter((eachTask) => {
+      return taskId !== eachTask.id
     })
+    this.setState({ taskList: newTaskList })
   }
+
 
   render() {
     return (
       <AppContainer>
         <H1>To Do List</H1>
         <TaskForm addTask={this.addTask} />
-        <TaskFilter selectedFilter={this.state.selectedFilter} alterFilter={this.alterFilter} />
-        <TaskList taskListProps={this.state.taskList} selectedFilter={this.state.selectedFilter} alterTask={this.alterTask} />
+        <TaskList taskList={this.state.taskList} deleteTask={this.deleteTask} />
       </AppContainer>
     )
   }
 };
+
 
 export default App;
